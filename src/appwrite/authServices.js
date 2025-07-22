@@ -2,6 +2,7 @@ import conf from '../conf/conf'
 import { Client, Account, ID } from "appwrite";
 
 
+
 export class AuthService {
     client = new Client();
     account;
@@ -46,20 +47,18 @@ export class AuthService {
         }
     }
 
-
     async getCurrentUser(){
         try {
-            this.account.get()
-
+            return await this.account.get()
         } catch (error) {
             console.log("appwrite service :: getCurrentUser :: error", error);
-
+            return null;
         }
     }
 
 
 }
 
-const authservice = new AuthService
+const authService = new AuthService
 
-export default authservice
+export default authService
