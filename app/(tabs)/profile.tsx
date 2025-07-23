@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet } from 'react-native';
+import {Login} from '@/src/components/index'
 
 export default function SettingTab() {
     return (
         <View style={styles.container}>
-            <Text>Profile.....</Text>
+            <Login/>
         </View>
     );
 }

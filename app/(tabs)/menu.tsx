@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from 'react-native';
-
+import {Signup} from '@/src/components/index'
 export default function MenuTab() {
     return (
         <View style={styles.container}>
-            <Text>Menu Item.....</Text>
+<Signup/>
         </View>
     );
 }

@@ -1,12 +1,12 @@
 import { View} from "react-native";
-import {Login} from '../src/components/index'
+import {Signup} from '@/src/components/index'
 
 
-const LoginPage = () => {
+const SignupPage = () => {
     return (
         <View style={{flex:1, backgroundColor:'#FFFFFF'}}>
-          <Login/>
+          <Signup/>
         </View>
     )
 }
-export default LoginPage;
+export default SignupPage;
