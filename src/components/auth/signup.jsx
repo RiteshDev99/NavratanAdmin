@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Image,
-  Alert,
   ScrollView,
   StyleSheet,
 } from "react-native";
@@ -28,26 +27,31 @@ const Signup = () => {
         name:"",
         email: "",
         password: "",
-    
+
     },
   });
 
   const signup = async (data) => {
     setError("");
+    console.log("🔍 Form Data Received:", data);
     try {
-      const userData = await authService.createAccount(data)
-      if(userData){
-        const currentUser = await authService.getCurrentUser()
-                if(currentUser) dispatch(authLogin(userData));
-                console.log(userData, 'sussfully');
-                
-                    router.push("/login");
+      const session = await authService.createAccount(data);
+      console.log("✅ User session after signup:", session);
+
+      const currentUser = await authService.getCurrentUser();
+      console.log("✅ Current User:", currentUser);
+
+      if (currentUser) {
+        dispatch(authLogin(currentUser));
+        router.push("/");
       }
-      
     } catch (err) {
+      console.error("Signup error:", err);
       setError(err.message);
     }
   };
+
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -64,7 +68,7 @@ const Signup = () => {
            Already have an account?{" "}
           <Text
             style={styles.link}
-            onPress={() => router.push("/login")} 
+            onPress={() => router.push("/login")}
           >
             Login
           </Text>
@@ -101,9 +105,9 @@ const Signup = () => {
   }}
   render={({ field: { onChange, value } }) => (
     <Input
-      label="Email:"               
+      label="Email:"
       placeholder="Enter your email"
-      value={value}                
+      value={value}
       onChangeText={onChange}
     />
   )}
@@ -156,7 +160,7 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 400,
-    backgroundColor: "#f3f4f6", 
+    backgroundColor: "#f3f4f6",
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,

@@ -8,7 +8,7 @@ import { ActivityIndicator, View } from "react-native";
 
 function RootLayoutInner() {
     const dispatch = useDispatch();
-    const user = useSelector((state: any) => state.auth);
+    const user = useSelector((state: any) => state.auth.status);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
