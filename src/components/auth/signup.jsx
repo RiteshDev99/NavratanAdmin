@@ -33,21 +33,18 @@ const Signup = () => {
 
   const signup = async (data) => {
     setError("");
-    console.log("🔍 Form Data Received:", data);
     try {
-      const session = await authService.createAccount(data);
-      console.log("✅ User session after signup:", session);
-
-      const currentUser = await authService.getCurrentUser();
-      console.log("✅ Current User:", currentUser);
-
-      if (currentUser) {
-        dispatch(authLogin(currentUser));
-        router.push("/");
+      const userData = await authService.createAccount(data);
+      if (userData){
+        const currentUser = await authService.getCurrentUser()
+        if (currentUser) {
+          dispatch(authLogin(userData));
+          router.push("/");
+        }
       }
-    } catch (err) {
-      console.error("Signup error:", err);
-      setError(err.message);
+
+    }catch (error) {
+      throw  error;
     }
   };
 
