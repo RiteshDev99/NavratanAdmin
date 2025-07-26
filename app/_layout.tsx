@@ -5,6 +5,8 @@ import authService from "@/src/appwrite/authServices";
 import { useEffect, useState } from "react";
 import { login, logout } from "@/src/store/feature/auth/authSlice";
 import { ActivityIndicator, View } from "react-native";
+import Toast from "react-native-toast-message";
+
 
 function RootLayoutInner() {
     const dispatch = useDispatch();
@@ -34,8 +36,9 @@ function RootLayoutInner() {
     return (
         <Stack screenOptions={{ headerShown: false }}>
             {user ? (
-                <Stack.Screen name="(tabs)" />
-            ) : (
+                    <Stack.Screen name="(tabs)" />
+
+                ) : (
                 <Stack.Screen name="login" />
             )}
         </Stack>
@@ -46,6 +49,7 @@ export default function RootLayout() {
     return (
         <Provider store={store}>
             <RootLayoutInner />
+            <Toast />
         </Provider>
     );
 }
