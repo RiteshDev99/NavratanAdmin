@@ -139,7 +139,7 @@ const Signup = () => {
           )}
 
           <Button
-            style={{ marginTop: 20 }}
+            style={{ marginTop: 20,}}
             onPress={handleSubmit(signup)}
           >
             Login

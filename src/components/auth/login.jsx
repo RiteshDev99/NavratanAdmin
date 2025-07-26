@@ -39,9 +39,9 @@ const Login = () => {
         if (userData) dispatch(authLogin(session));
         router.push("/");
         Toast.show({
-          type: "success", // 'success' | 'error' | 'info'
+          type: "success", 
           text1: "Login Successfully",
-          position: "bottom", // or 'top'
+          position: "bottom", 
         });
 
       }

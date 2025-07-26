@@ -1,5 +1,5 @@
 import { View} from "react-native";
-import {Login} from '../src/components/index'
+import {Login} from '@/src/components/index'
 
 
 const LoginPage = () => {

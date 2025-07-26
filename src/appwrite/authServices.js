@@ -1,7 +1,6 @@
 import conf from '../conf/conf'
 import { Client, Account, ID } from "appwrite";
-
-
+import Toast from "react-native-toast-message";
 
 export class AuthService {
     client = new Client();
@@ -23,6 +22,12 @@ export class AuthService {
             }
         } catch (error) {
             console.log("appwrite service :: createAccount :: error", error);
+            Toast.show({
+                type: "error",
+                text1: "Signup Failed",
+                text2: error.message,
+                position: "bottom",
+            });
         }
 
     }
@@ -32,6 +37,12 @@ export class AuthService {
             return await this.account.createEmailPasswordSession(email, password);
         } catch (error) {
             console.log("appwrite service :: Login :: error", error);
+            Toast.show({
+                type: "error",
+                text1: "Login Failed",
+                text2: error.message,
+                position: "bottom",
+            });
         }
     }
 
@@ -40,6 +51,12 @@ export class AuthService {
             return await this.account.deleteSessions()
         } catch (error) {
             console.log("appwrite service :: logout :: error", error);
+            Toast.show({
+                type: "error",
+                text1: "Logout Failed",
+                text2: error.message,
+                position: "bottom",
+            });
         }
     }
 
