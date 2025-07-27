@@ -12,7 +12,7 @@ import { useDispatch } from "react-redux";
 import { login as authLogin } from "../../store/feature/auth/authSlice";
 import { useRouter } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
-import Toast from "react-native-toast-message";
+import { showToast } from "@/src/utils/toastConfig";
 
 const Login = () => {
   const router = useRouter();
@@ -38,12 +38,7 @@ const Login = () => {
         const userData = await authService.getCurrentUser();
         if (userData) dispatch(authLogin(session));
         router.push("/");
-        Toast.show({
-          type: "success", 
-          text1: "Login Successfully",
-          position: "bottom", 
-        });
-
+        showToast("success", "Login Successful");
       }
     } catch (err) {
       setError(err.message);

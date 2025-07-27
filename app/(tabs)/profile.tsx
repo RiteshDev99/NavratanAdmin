@@ -1,32 +1,30 @@
+import React from "react";
 import {View, StyleSheet,  Text} from 'react-native';
 import authService from "@/src/appwrite/authServices";
 import {useDispatch, useSelector} from "react-redux";
 import {logout} from '@/src/store/feature/auth/authSlice'
 import {Button} from '@/src/components/index'
-import React, {useEffect} from "react";
 import {useRouter} from "expo-router";
-import Toast from "react-native-toast-message";
 import { Image } from "expo-image";
+import {showToast} from "@/src/utils/toastConfig";
 
 export default function ProfileTab() {
 
     const dispatch = useDispatch();
     const router = useRouter();
-
     const userData  = useSelector((state:any) => state.auth.userData);
+
+
 
     const logoutHandler = () => {
         authService.logout()
             .then(() => {
                 dispatch(logout())
                 router.push("/login")
-                Toast.show({
-                    type: "success",
-                    text1: "Logout Successfully",
-                    position: "bottom",
-                });
+                showToast("success", "Logout Successful");
+
             })
-            .catch((error)=> {
+            .catch((error:any)=> {
                 console.log("Appwrite error", error)
             })
     }

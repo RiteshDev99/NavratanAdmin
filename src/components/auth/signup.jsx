@@ -12,7 +12,7 @@ import { login as authLogin } from "../../store/feature/auth/authSlice";
 import { useRouter } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
 import authService from "@/src/appwrite/authServices";
-import Toast from "react-native-toast-message";
+import { showToast } from "@/src/utils/toastConfig";
 
 const Signup = () => {
   const router = useRouter();
@@ -41,11 +41,7 @@ const Signup = () => {
         if (currentUser) {
           dispatch(authLogin(userData));
           router.push("/");
-          Toast.show({
-            type: "success",
-            text1: "Signup Successfully",
-            position: "bottom",
-          });
+          showToast("success", "Signup Successful");
         }
       }
 

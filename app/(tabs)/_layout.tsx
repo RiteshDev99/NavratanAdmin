@@ -1,8 +1,9 @@
 import { Tabs } from 'expo-router';
-import {AntDesign, EvilIcons, MaterialCommunityIcons} from "@expo/vector-icons";
+import {AntDesign, EvilIcons, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import CustomHeader from "@/src/components/customHeader";
 
 export default function TabLayout() {
+
     return (
         <Tabs
             screenOptions={{
@@ -10,8 +11,11 @@ export default function TabLayout() {
                 header: () => <CustomHeader />,
                 tabBarStyle: {
                     height: 80,
-                    backgroundColor:'#F8FAFC'
+                    backgroundColor:'#F8FAFC',
+                    shadowRadius: 5
+
                 },
+
         }}>
             <Tabs.Screen
                 name="index"
@@ -23,8 +27,8 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="menu"
                 options={{
-                    title: 'Menu-Edit',
-                    tabBarIcon: ({ color }) => <MaterialCommunityIcons  size={22} name="clipboard-edit-outline" color={color} />,
+                    title: 'Menu',
+                    tabBarIcon: ({ color }) => <MaterialIcons size={25} name="restaurant-menu" color={color} />,
                 }}
             />
             <Tabs.Screen
