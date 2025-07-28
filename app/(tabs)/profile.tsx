@@ -14,8 +14,7 @@ export default function ProfileTab() {
     const router = useRouter();
     const userData  = useSelector((state:any) => state.auth.userData);
 
-
-
+    
     const logoutHandler = () => {
         authService.logout()
             .then(() => {

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import {AntDesign, EvilIcons, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
+import {AntDesign, EvilIcons,  MaterialIcons} from "@expo/vector-icons";
 import CustomHeader from "@/src/components/customHeader";
 
 export default function TabLayout() {
