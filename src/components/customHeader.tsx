@@ -1,10 +1,10 @@
-import {StyleSheet, View, TouchableOpacity, StatusBar,  Pressable, Text} from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
+import {StyleSheet, View, TouchableOpacity, StatusBar,  Pressable} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import {useRouter} from "expo-router";
 import React from "react";
 import {useSelector} from "react-redux";
+import Logo from "@/src/components/ui/Logo";
 
 const CustomHeader = () => {
     const router = useRouter();
@@ -18,17 +18,12 @@ const CustomHeader = () => {
                     <Pressable
                         onPress={()=> router.push("/")}
                     >
-                        <Image
-                            source={require('@/assets/icons/Navratan_Logo.png')}
-                            style={styles.appImage}
-                        />
-
-                        </Pressable>
+                        <Logo style={{height: 80,}} />
+                    </Pressable>
 
                     <TouchableOpacity style={styles.profile}
                      onPress={()=> router.push("/profile")}
                     >
-                        {/*<FontAwesome5 size={26} name="user" color={'#FF6347'} />*/}
                         <Image
                             source={{
                                 uri: userData?.avatarUrl || "https://i.pravatar.cc/150?img=12",

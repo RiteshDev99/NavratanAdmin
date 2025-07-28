@@ -26,30 +26,30 @@ export default DashboardCard;
 
 const styles = StyleSheet.create({
     container: {
-        height: 115,
+        height: 105,
         width: 170,
         borderRadius: 12,
-        padding: 10,
+        padding: 5,
     },
     innerContainer: {
         height: 60,
         width: '100%',
         flexDirection: "row",
         justifyContent: 'center',
-        gap: 15,
+        gap: 10,
         alignItems: 'center',
     },
     title: {
         color: '#fff',
-        fontSize: 20,
-        fontWeight: '600',
+        fontSize: 15,
+        fontWeight: '400',
     },
     numContainer: {
         flex: 1,
         alignItems: 'center',
     },
     numbers: {
-        fontSize: 27,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#fff',
     },

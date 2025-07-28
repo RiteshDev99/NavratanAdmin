@@ -13,6 +13,7 @@ import { useRouter } from "expo-router";
 import { useForm, Controller } from "react-hook-form";
 import authService from "@/src/appwrite/authServices";
 import { showToast } from "@/src/utils/toastConfig";
+import Logo from "@/src/components/ui/Logo";
 
 const Signup = () => {
   const router = useRouter();
@@ -56,10 +57,7 @@ const Signup = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.card}>
         <View style={styles.logoContainer}>
-          <Image
-            source={require("../../../assets/icons/Navratan_Logo.png")}
-            style={styles.logo}
-          />
+          <Logo/>
         </View>
 
         <Text style={styles.title}>Sign in to your account</Text>
@@ -168,11 +166,6 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: "center",
     marginBottom: 10,
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    resizeMode: "contain",
   },
   title: {
     textAlign: "center",

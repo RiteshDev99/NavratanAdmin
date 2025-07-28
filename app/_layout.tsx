@@ -4,8 +4,9 @@ import store from "@/src/store/store";
 import authService from "@/src/appwrite/authServices";
 import { useEffect, useState } from "react";
 import { login, logout } from "@/src/store/feature/auth/authSlice";
-import { ActivityIndicator, View } from "react-native";
+import {ActivityIndicator,  View} from "react-native";
 import Toast from "react-native-toast-message";
+import { StatusBar } from 'expo-status-bar';
 
 
 function RootLayoutInner() {
@@ -48,6 +49,7 @@ function RootLayoutInner() {
 export default function RootLayout() {
     return (
         <Provider store={store}>
+            <StatusBar style="dark" backgroundColor="#222f3e" />
             <RootLayoutInner />
             <Toast />
         </Provider>

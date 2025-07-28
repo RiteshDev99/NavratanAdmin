@@ -14,6 +14,8 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import {Button} from "@/src/components";
+import {showToast} from "@/src/utils/toastConfig";
+import Logo from "@/src/components/ui/Logo";
 
 export default function PostForm() {
     const[title, setTitle] = useState('');
@@ -48,6 +50,7 @@ export default function PostForm() {
         };
 
         console.log('Form Data:', formData);
+        showToast("success", "Food Add Successful");
         handleClose();
     };
 
@@ -66,7 +69,6 @@ export default function PostForm() {
         >
             <SafeAreaView style={styles.overlay}>
                 <View style={styles.container}>
-                    {/* Close Icon */}
                     <TouchableOpacity style={styles.closeIcon} onPress={handleClose}>
                         <Ionicons name="close" size={28} color="#333" />
                     </TouchableOpacity>
@@ -76,7 +78,9 @@ export default function PostForm() {
                         keyboardShouldPersistTaps="handled"
                         showsVerticalScrollIndicator={false}
                     >
-                        <Text style={styles.heading}>Add Food</Text>
+                        <View style={styles.logoContainer}>
+                            <Logo />
+                        </View>
 
                         <TextInput
                             style={styles.input}
@@ -113,7 +117,7 @@ export default function PostForm() {
                         </TouchableOpacity>
 
                         <Button
-                            style={{ marginTop: 10, paddingVertical:15 }}
+                            style={{ marginTop: 10, paddingVertical:13 }}
                             onPress={handleSubmit}
                         >
                             Submit
@@ -198,5 +202,8 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    logoContainer: {
+        alignItems: "center",
     },
 });
