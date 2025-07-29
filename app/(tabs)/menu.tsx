@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import FloatingButton from '@/src/components/ui/FloatingButton';
-import PostForm from '@/src/components/postForm/PostForm';
+import PostForm from '@/src/components/menuItems/MenuForm';
 
 export default function MenuTab() {
     const [showForm, setShowForm] = useState(false);
@@ -16,9 +16,7 @@ export default function MenuTab() {
                 <ScrollView>
                     <PostForm/>
                 </ScrollView>
-            ) : (
-                <Text style={styles.header}>Click the + to add a new post</Text>
-            )}
+            ):null}
 
             <FloatingButton onPress={handleFabClick} />
         </View>
