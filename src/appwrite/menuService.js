@@ -1,5 +1,6 @@
 import conf from '../conf/conf';
-import { Client, Databases, ID, Query, Storage } from "appwrite";
+import { Client, Databases, ID, Storage } from "appwrite";
+import {showToast} from "../utils/toastConfig";
 
 class MenuService {
     client = new Client();
@@ -15,13 +16,12 @@ class MenuService {
         this.storage = new Storage(this.client);
     }
 
-    // ✅ Create Menu Item
     async createMenuItem({ name, price, category, image, isFeatured, createdAt, userId }) {
         try {
             return await this.databases.createDocument(
                 conf.appwriteDataBaseId,
                 conf.appwriteCollectionId,
-                ID.unique(), // or use slug logic if needed
+                ID.unique(),
                 {
                     name,
                     price,
@@ -34,10 +34,11 @@ class MenuService {
             );
         } catch (error) {
             console.log("Appwrite Service :: createMenuItem :: Error", error);
+            showToast("error", " createMenuItem", error.message);
+
         }
     }
 
-    // ✅ Update Menu Item
     async updateMenuItem(id, { name, price, category, image, isFeatured }) {
         try {
             return await this.databases.updateDocument(
@@ -54,10 +55,11 @@ class MenuService {
             );
         } catch (error) {
             console.log("Appwrite Service :: updateMenuItem :: Error", error);
+            showToast("error", " updateMenuItem", error.message);
+
         }
     }
 
-    // ✅ Delete Menu Item
     async deleteMenuItem(id) {
         try {
             await this.databases.deleteDocument(
@@ -68,11 +70,11 @@ class MenuService {
             return true;
         } catch (error) {
             console.log("Appwrite Service :: deleteMenuItem :: Error", error);
+            showToast("error", "deleteMenuItem ", error.message);
             return false;
         }
     }
 
-    // ✅ Get Single Menu Item
     async getMenuItem(id) {
         try {
             return await this.databases.getDocument(
@@ -82,11 +84,11 @@ class MenuService {
             );
         } catch (error) {
             console.log("Appwrite Service :: getMenuItem :: Error", error);
+            showToast("error", "getMenuItem ", error.message);
             return false;
         }
     }
 
-    // ✅ Get All Menu Items
     async getMenuItems(queries = []) {
         try {
             return await this.databases.listDocuments(
@@ -96,11 +98,12 @@ class MenuService {
             );
         } catch (error) {
             console.log("Appwrite Service :: getMenuItems :: Error", error);
+            showToast("error", "getMenuItems ", error.message);
+
             return false;
         }
     }
 
-    // ✅ Upload Image
     async uploadImage(file) {
         try {
             return await this.storage.createFile(
@@ -110,32 +113,34 @@ class MenuService {
             );
         } catch (error) {
             console.log("Appwrite Service :: uploadImage :: Error", error);
+            showToast("error", "uploadImage  ", error.message);
             return false;
         }
     }
 
-    // ✅ Delete Image
     async deleteImage(fileId) {
         try {
             await this.storage.deleteFile(conf.appwriteBucketId, fileId);
             return true;
         } catch (error) {
             console.log("Appwrite Service :: deleteImage :: Error", error);
+            showToast("error", " deleteImage", error.message);
+
             return false;
         }
     }
 
-    // ✅ Get Image Preview URL
     getImagePreview(fileId) {
         return this.storage.getFilePreview(conf.appwriteBucketId, fileId);
     }
 
-    // ✅ Download Image (if needed)
     async downloadImage(fileId) {
         try {
             return await this.storage.getFileDownload(conf.appwriteBucketId, fileId);
         } catch (error) {
             console.log("Appwrite Service :: downloadImage :: Error", error);
+            showToast("error", "downloadImage", error.message);
+
             return false;
         }
     }
