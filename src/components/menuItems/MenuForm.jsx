@@ -9,7 +9,7 @@ import {
     SafeAreaView,
     Modal,
     ScrollView,
-    Alert,
+    Switch,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as ImagePicker from 'expo-image-picker';
@@ -17,10 +17,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/src/components';
 import { showToast } from '@/src/utils/toastConfig';
 import Logo from '@/src/components/ui/Logo';
+import menuService from '@/src/appwrite/menuService';
+import { useDispatch } from 'react-redux';
+import { addMenuItem } from '@/src/store/feature/menuItems/menuSlice';
 
-export default function AddMenuItemForm() {
+export default function AddMenuItemForm({ userId }) {
     const [modalVisible, setModalVisible] = useState(true);
     const [imageUri, setImageUri] = useState(null);
+
+    const dispatch = useDispatch();
 
     const {
         control,
@@ -31,6 +36,8 @@ export default function AddMenuItemForm() {
         defaultValues: {
             name: '',
             price: '',
+            category: '',
+            isFeatured: false,
         },
     });
 
@@ -47,20 +54,40 @@ export default function AddMenuItemForm() {
         }
     };
 
-    const onSubmit = (data) => {
-        if (!imageUri) {
-            Alert.alert('Please select an image');
-            return;
+    const onSubmit = async (data) => {
+        try {
+            let uploadedImage = null;
+
+            if (imageUri) {
+                const file = {
+                    uri: imageUri,
+                    name: `menu-${Date.now()}.jpg`,
+                    type: 'image/jpeg',
+                };
+                uploadedImage = await menuService.uploadImage(file);
+            }
+
+            const payload = {
+                ...data,
+                price: toString(data.price),
+                image: uploadedImage ? uploadedImage.$id : '',
+                createdAt: new Date().toISOString(),
+                userId,
+            };
+
+            const result = await menuService.createMenuItem(payload);
+
+            if (result) {
+                dispatch(addMenuItem(result));
+                showToast('success', 'Success', 'Menu item added!');
+                reset();
+                setImageUri(null);
+                setModalVisible(false);
+            }
+        } catch (error) {
+            console.error('Error creating item:', error);
+            showToast('error', 'Error', error.message || 'Something went wrong');
         }
-
-        const menuItem = {
-            ...data,
-            image: imageUri,
-        };
-
-        console.log('Menu Item:', menuItem);
-        showToast('success', 'Menu item added successfully!');
-        handleClose();
     };
 
     const handleClose = () => {
@@ -77,12 +104,11 @@ export default function AddMenuItemForm() {
                         <Ionicons name="close" size={28} color="#333" />
                     </TouchableOpacity>
 
-                    <ScrollView contentContainerStyle={{ padding: 20 }} keyboardShouldPersistTaps="handled">
+                    <ScrollView contentContainerStyle={{ padding: 20, gap:5, }} keyboardShouldPersistTaps="handled">
                         <View style={styles.logoContainer}>
                             <Logo />
+                            <Text style={styles.title}>Add New Menu Item</Text>
                         </View>
-
-                        {/* Name of Dish */}
                         <Controller
                             control={control}
                             name="name"
@@ -91,7 +117,6 @@ export default function AddMenuItemForm() {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Food Name"
-                                    placeholderTextColor="#888"
                                     value={value}
                                     onChangeText={onChange}
                                 />
@@ -99,7 +124,6 @@ export default function AddMenuItemForm() {
                         />
                         {errors.name && <Text style={styles.error}>{errors.name.message}</Text>}
 
-                        {/* Price */}
                         <Controller
                             control={control}
                             name="price"
@@ -108,7 +132,6 @@ export default function AddMenuItemForm() {
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Price"
-                                    placeholderTextColor="#888"
                                     keyboardType="numeric"
                                     value={value}
                                     onChangeText={onChange}
@@ -116,6 +139,31 @@ export default function AddMenuItemForm() {
                             )}
                         />
                         {errors.price && <Text style={styles.error}>{errors.price.message}</Text>}
+
+                        <Controller
+                            control={control}
+                            name="category"
+                            render={({ field: { onChange, value } }) => (
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Category"
+                                    value={value}
+                                    onChangeText={onChange}
+                                />
+                            )}
+                        />
+
+                        {/* Featured Switch */}
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                            <Text>Featured</Text>
+                            <Controller
+                                control={control}
+                                name="isFeatured"
+                                render={({ field: { onChange, value } }) => (
+                                    <Switch value={value} onValueChange={onChange} style={{ marginLeft: 10 }} />
+                                )}
+                            />
+                        </View>
 
                         {/* Image Picker */}
                         <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
@@ -129,7 +177,7 @@ export default function AddMenuItemForm() {
                             )}
                         </TouchableOpacity>
 
-                        {/* Submit Button */}
+                        {/* Submit */}
                         <Button style={{ marginTop: 10, paddingVertical: 13 }} onPress={handleSubmit(onSubmit)}>
                             Add Item
                         </Button>
@@ -139,6 +187,7 @@ export default function AddMenuItemForm() {
         </Modal>
     );
 }
+
 
 const styles = StyleSheet.create({
     overlay: {
@@ -160,6 +209,15 @@ const styles = StyleSheet.create({
         top: 12,
         right: 12,
         zIndex: 1,
+    },
+    logoContainer: {
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: '600',
+        marginTop: 8,
     },
     input: {
         borderWidth: 1,
@@ -197,9 +255,5 @@ const styles = StyleSheet.create({
         color: 'red',
         marginBottom: 10,
         fontSize: 14,
-    },
-    logoContainer: {
-        alignItems: 'center',
-        marginBottom: 10,
     },
 });
