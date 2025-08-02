@@ -66,10 +66,9 @@ export default function AddMenuItemForm({ userId }) {
                 };
                 uploadedImage = await menuService.uploadImage(file);
             }
-
             const payload = {
                 ...data,
-                price: toString(data.price),
+                price: data.price,
                 image: uploadedImage ? uploadedImage.$id : '',
                 createdAt: new Date().toISOString(),
                 userId,

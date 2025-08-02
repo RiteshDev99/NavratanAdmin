@@ -17,8 +17,8 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({ onPress }) => {
 const styles = StyleSheet.create({
     fab: {
         position: 'absolute',
-        bottom: 30,
-        right: 25,
+        bottom: 35,
+        right: 20,
         backgroundColor: '#eb7724',
         width: 60,
         height: 60,
