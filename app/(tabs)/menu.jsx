@@ -14,9 +14,15 @@ export default function MenuTab() {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     const handleFabClick = () => {
         setShowForm((prev) => !prev);
+    };
+
+    const handleCardClick = (item) => {
+        setSelectedItem({ ...item, _ts: Date.now() }); // force refresh
+        setShowForm(true);
     };
 
     const fetchMenuItems = async (isRefresh = false) => {
@@ -43,8 +49,6 @@ export default function MenuTab() {
     const onRefresh = () => {
         fetchMenuItems(true);
     };
-
-
 
     useEffect(() => {
         fetchMenuItems();
@@ -77,7 +81,7 @@ export default function MenuTab() {
             <FlatList
                 data={items}
                 keyExtractor={(item) => item.$id}
-                renderItem={({ item }) => <MenuCard item={item} />}
+                renderItem={({ item }) =>  <MenuCard item={item} onPress={() => handleCardClick(item)} />}
                 numColumns={2}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={[
@@ -99,7 +103,14 @@ export default function MenuTab() {
 
             {showForm && (
                 <View style={styles.modalOverlay}>
-                    <AddMenuItemForm />
+                    <AddMenuItemForm
+                        item={selectedItem} // pass the data of selected card
+                        onClose={() => {
+                            setShowForm(false);
+                            setSelectedItem(null);
+                            fetchMenuItems();
+                        }}
+                    />
                 </View>
             )}
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     View,
     Text,
@@ -19,9 +19,9 @@ import { showToast } from '@/src/utils/toastConfig';
 import Logo from '@/src/components/ui/Logo';
 import menuService from '@/src/appwrite/menuService';
 import { useDispatch } from 'react-redux';
-import { addMenuItem } from '@/src/store/feature/menuItems/menuSlice';
+import { addMenuItem, updateMenuItem  } from '@/src/store/feature/menuItems/menuSlice';
 
-export default function AddMenuItemForm({ userId }) {
+export default function AddMenuItemForm({ userId, item = null, onClose }) {
     const [modalVisible, setModalVisible] = useState(true);
     const [imageUri, setImageUri] = useState(null);
 
@@ -31,6 +31,7 @@ export default function AddMenuItemForm({ userId }) {
         control,
         handleSubmit,
         reset,
+        setValue,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -76,6 +77,16 @@ export default function AddMenuItemForm({ userId }) {
 
             const result = await menuService.createMenuItem(payload);
 
+            const updateItem = await menuService.updateMenuItem(payload);
+
+            if (updateItem) {
+                dispatch(updateMenuItem(payload));
+                showToast('success', 'Success', 'Menu item added!');
+                reset();
+                setImageUri(null);
+                setModalVisible(false);
+            }
+
             if (result) {
                 dispatch(addMenuItem(result));
                 showToast('success', 'Success', 'Menu item added!');
@@ -95,6 +106,15 @@ export default function AddMenuItemForm({ userId }) {
         setModalVisible(false);
     };
 
+
+    useEffect(() => {
+        if (item) {
+            setValue('name', item.name);
+            setValue('category', item.category);
+            setValue('price', item.price);
+            setImageUri(item.imageUrl); // if you show image
+        }
+    }, [item,setValue, reset]);
     return (
         <Modal visible={modalVisible} animationType="slide" transparent onRequestClose={handleClose}>
             <SafeAreaView style={styles.overlay}>
