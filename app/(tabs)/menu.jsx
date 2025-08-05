@@ -18,13 +18,16 @@ export default function MenuTab() {
 
     const handleFabClick = () => {
         setShowForm((prev) => !prev);
+        setSelectedItem(null);
     };
 
     const handleCardClick = (item) => {
-        setSelectedItem({ ...item, _ts: Date.now() }); // force refresh
-        setShowForm(true);
+        setSelectedItem({ ...item, _ts: Date.now() });
+        if (item){
+            setShowForm(prev => !prev);
+        }
     };
-
+    
     const fetchMenuItems = async (isRefresh = false) => {
         try {
             if (isRefresh) setRefreshing(true);

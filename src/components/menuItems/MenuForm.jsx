@@ -17,11 +17,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { Button } from '@/src/components';
 import { showToast } from '@/src/utils/toastConfig';
 import Logo from '@/src/components/ui/Logo';
-import menuService from '@/src/appwrite/menuService';
+import menuService from '../../appwrite/menuService';
 import { useDispatch } from 'react-redux';
 import { addMenuItem, updateMenuItem  } from '@/src/store/feature/menuItems/menuSlice';
+import {deleteMenuItem as deleteMenuCard} from "../../store/feature/menuItems/menuSlice";
 
-export default function AddMenuItemForm({ userId, item = null, onClose }) {
+export default function AddMenuItemForm({ userId, item = null, onClose, ShowPrevData }) {
     const [modalVisible, setModalVisible] = useState(true);
     const [imageUri, setImageUri] = useState(null);
 
@@ -55,6 +56,14 @@ export default function AddMenuItemForm({ userId, item = null, onClose }) {
         }
     };
 
+
+    const handleClose = () => {
+        reset();
+        setImageUri(null);
+        setModalVisible(false);
+    };
+
+    
     const onSubmit = async (data) => {
         try {
             let uploadedImage = null;
@@ -77,15 +86,15 @@ export default function AddMenuItemForm({ userId, item = null, onClose }) {
 
             const result = await menuService.createMenuItem(payload);
 
-            const updateItem = await menuService.updateMenuItem(payload);
-
-            if (updateItem) {
-                dispatch(updateMenuItem(payload));
-                showToast('success', 'Success', 'Menu item added!');
-                reset();
-                setImageUri(null);
-                setModalVisible(false);
-            }
+            // const updateItem = await menuService.updateMenuItem(payload);
+            //
+            // if (updateItem) {
+            //     dispatch(updateMenuItem(payload));
+            //     showToast('success', 'Success', 'Menu item added!');
+            //     reset();
+            //     setImageUri(null);
+            //     setModalVisible(false);
+            // }
 
             if (result) {
                 dispatch(addMenuItem(result));
@@ -100,21 +109,34 @@ export default function AddMenuItemForm({ userId, item = null, onClose }) {
         }
     };
 
-    const handleClose = () => {
-        reset();
-        setImageUri(null);
-        setModalVisible(false);
-    };
 
+
+    const DeleteCard = async (id) => {
+        try {
+            const success = await menuService.deleteMenuItem(id);
+            
+            if (success) {
+                dispatch(deleteMenuCard(id));
+                setModalVisible(false);
+                showToast("success", "Menu item deleted!");
+            } else {
+                showToast("error", "Failed to delete menu item");
+            }
+        } catch (error) {
+            console.error("Error deleting item:", error);
+            showToast("error", "Something went wrong while deleting");
+        }
+    };
 
     useEffect(() => {
         if (item) {
             setValue('name', item.name);
             setValue('category', item.category);
             setValue('price', item.price);
-            setImageUri(item.imageUrl); // if you show image
+            setImageUri(item.imageUrl);
         }
-    }, [item,setValue, reset]);
+    }, [item]);
+
     return (
         <Modal visible={modalVisible} animationType="slide" transparent onRequestClose={handleClose}>
             <SafeAreaView style={styles.overlay}>
@@ -126,7 +148,7 @@ export default function AddMenuItemForm({ userId, item = null, onClose }) {
                     <ScrollView contentContainerStyle={{ padding: 20, gap:5, }} keyboardShouldPersistTaps="handled">
                         <View style={styles.logoContainer}>
                             <Logo />
-                            <Text style={styles.title}>Add New Menu Item</Text>
+                            <Text style={styles.title}>{item ? "Update Menu Item" : " Add New Menu Item"}</Text>
                         </View>
                         <Controller
                             control={control}
@@ -196,10 +218,21 @@ export default function AddMenuItemForm({ userId, item = null, onClose }) {
                             )}
                         </TouchableOpacity>
 
-                        {/* Submit */}
                         <Button style={{ marginTop: 10, paddingVertical: 13 }} onPress={handleSubmit(onSubmit)}>
-                            Add Item
+                            {item ?
+                                "Update" :
+                                "Add menu"
+                            }
                         </Button>
+                        {item ? (
+                            <Button
+                                style={{ marginTop: 10, paddingVertical: 13, backgroundColor: 'red' }}
+                                onPress={() => DeleteCard(item.$id)} // ✅ wrapped in arrow function
+                            >
+                                Delete Card
+                            </Button>
+                        ) : null}
+
                     </ScrollView>
                 </View>
             </SafeAreaView>
