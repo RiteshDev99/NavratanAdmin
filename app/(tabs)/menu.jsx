@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, FlatList, Text, ActivityIndicator, RefreshControl} from 'react-native';
-import FloatingButton from '@/src/components/ui/FloatingButton';
-import AddMenuItemForm from "@/src/components/menuItems/MenuForm";
-import menuService from "@/src/appwrite/menuService";
-import {useDispatch} from "react-redux";
-import {setMenuItems} from "@/src/store/feature/menuItems/menuSlice";
-import MenuCard from "../../src/components/ui/MenuCard";
 
-export default function MenuTab() {
+
+import {useDispatch} from "react-redux";
+
+import MenuCard from "../../src/components/ui/MenuCard";
+import MenuItemForm from "../../src/components/menuItems/MenuForm";
+import {setMenuItems} from "../../src/store/feature/menuItems/menuSlice";
+import menuService from "../../src/appwrite/menuService";
+import FloatingButton from "../../src/components/ui/FloatingButton";
+
+ function MenuTab() {
     const dispatch = useDispatch();
     const [showForm, setShowForm] = useState(false);
     const [items, setItems] = useState([]);
@@ -27,7 +30,7 @@ export default function MenuTab() {
             setShowForm(prev => !prev);
         }
     };
-    
+
     const fetchMenuItems = async (isRefresh = false) => {
         try {
             if (isRefresh) setRefreshing(true);
@@ -54,7 +57,7 @@ export default function MenuTab() {
     };
 
     useEffect(() => {
-        fetchMenuItems();
+        fetchMenuItems(true)
     }, []);
 
     const renderEmptyState = () => (
@@ -106,7 +109,7 @@ export default function MenuTab() {
 
             {showForm && (
                 <View style={styles.modalOverlay}>
-                    <AddMenuItemForm
+                    <MenuItemForm
                         item={selectedItem} // pass the data of selected card
                         onClose={() => {
                             setShowForm(false);
@@ -176,3 +179,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 });
+
+export default MenuTab;

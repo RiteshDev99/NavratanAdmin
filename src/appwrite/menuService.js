@@ -1,6 +1,7 @@
 import conf from '../conf/conf';
 import { Client, Databases, ID, Storage } from "appwrite";
 import {showToast} from "../utils/toastConfig";
+import {Platform} from "react-native";
 
 class MenuService {
     client = new Client();
@@ -104,19 +105,19 @@ class MenuService {
         }
     }
 
-    async uploadImage(file) {
+    async uploadFile(file) {
         try {
             return await this.storage.createFile(
                 conf.appwriteBucketId,
                 ID.unique(),
-                file
-            );
-        } catch (error) {
-            console.log("Appwrite Service :: uploadImage :: Error", error);
-            showToast("error", "uploadImage  ", error.message);
+                file,
+            )
+        } catch(error) {
+            console.log("Appwrite service :: updateFile :: error", error)
             return false;
         }
     }
+
 
     async deleteImage(fileId) {
         try {

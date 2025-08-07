@@ -9,7 +9,7 @@ import {
     SafeAreaView,
     Modal,
     ScrollView,
-    Switch,
+    Switch, ActivityIndicator, Alert,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import * as ImagePicker from 'expo-image-picker';
@@ -18,15 +18,17 @@ import { Button } from '@/src/components';
 import { showToast } from '@/src/utils/toastConfig';
 import Logo from '@/src/components/ui/Logo';
 import menuService from '../../appwrite/menuService';
-import { useDispatch } from 'react-redux';
-import { addMenuItem, updateMenuItem  } from '@/src/store/feature/menuItems/menuSlice';
-import {deleteMenuItem as deleteMenuCard} from "../../store/feature/menuItems/menuSlice";
+import {useDispatch} from 'react-redux';
+import {addMenuItem, deleteMenuItem as deleteMenuCard} from "../../store/feature/menuItems/menuSlice";
 
-export default function AddMenuItemForm({ userId, item = null, onClose, ShowPrevData }) {
+
+
+export default function MenuItemForm({item }) {
     const [modalVisible, setModalVisible] = useState(true);
     const [imageUri, setImageUri] = useState(null);
-
     const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
+
 
     const {
         control,
@@ -37,6 +39,7 @@ export default function AddMenuItemForm({ userId, item = null, onClose, ShowPrev
     } = useForm({
         defaultValues: {
             name: '',
+            image: '',
             price: '',
             category: '',
             isFeatured: false,
@@ -63,9 +66,10 @@ export default function AddMenuItemForm({ userId, item = null, onClose, ShowPrev
         setModalVisible(false);
     };
 
-    
+
     const onSubmit = async (data) => {
         try {
+            setLoading(true);
             let uploadedImage = null;
 
             if (imageUri) {
@@ -74,38 +78,37 @@ export default function AddMenuItemForm({ userId, item = null, onClose, ShowPrev
                     name: `menu-${Date.now()}.jpg`,
                     type: 'image/jpeg',
                 };
-                uploadedImage = await menuService.uploadImage(file);
-            }
-            const payload = {
-                ...data,
-                price: data.price,
-                image: uploadedImage ? uploadedImage.$id : '',
-                createdAt: new Date().toISOString(),
-                userId,
-            };
+                uploadedImage = await menuService.uploadFile(file);
+                console.log('Image ID:', uploadedImage?.$id);
+                console.log('Image URL:', uploadedImage?.url);
 
-            const result = await menuService.createMenuItem(payload);
 
-            // const updateItem = await menuService.updateMenuItem(payload);
-            //
-            // if (updateItem) {
-            //     dispatch(updateMenuItem(payload));
-            //     showToast('success', 'Success', 'Menu item added!');
-            //     reset();
-            //     setImageUri(null);
-            //     setModalVisible(false);
-            // }
+                const payload = {
+                    ...data,
+                    image: uploadedImage ? uploadedImage.$id : '',
+                    price: data.price,
+                    createdAt: new Date().toISOString(),
+                };
 
-            if (result) {
-                dispatch(addMenuItem(result));
-                showToast('success', 'Success', 'Menu item added!');
-                reset();
-                setImageUri(null);
-                setModalVisible(false);
+                const result = await menuService.createMenuItem(payload);
+                console.log(payload);
+
+                if (result) {
+                    dispatch(addMenuItem(result));
+                    showToast('success', 'Success', 'Menu item added!');
+                    reset();
+                    setImageUri(null);
+                    setModalVisible(false);
+                }
+            }else{
+                showToast('info', 'No Image', 'Please select an image');
+                Alert.alert('No Image', 'Please select an image')
             }
         } catch (error) {
             console.error('Error creating item:', error);
             showToast('error', 'Error', error.message || 'Something went wrong');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -114,7 +117,7 @@ export default function AddMenuItemForm({ userId, item = null, onClose, ShowPrev
     const DeleteCard = async (id) => {
         try {
             const success = await menuService.deleteMenuItem(id);
-            
+
             if (success) {
                 dispatch(deleteMenuCard(id));
                 setModalVisible(false);
@@ -194,7 +197,6 @@ export default function AddMenuItemForm({ userId, item = null, onClose, ShowPrev
                             )}
                         />
 
-                        {/* Featured Switch */}
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
                             <Text>Featured</Text>
                             <Controller
@@ -206,7 +208,6 @@ export default function AddMenuItemForm({ userId, item = null, onClose, ShowPrev
                             />
                         </View>
 
-                        {/* Image Picker */}
                         <TouchableOpacity style={styles.imagePicker} onPress={handleImagePick}>
                             {imageUri ? (
                                 <Image source={{ uri: imageUri }} style={styles.image} />
@@ -219,17 +220,14 @@ export default function AddMenuItemForm({ userId, item = null, onClose, ShowPrev
                         </TouchableOpacity>
 
                         <Button style={{ marginTop: 10, paddingVertical: 13 }} onPress={handleSubmit(onSubmit)}>
-                            {item ?
-                                "Update" :
-                                "Add menu"
-                            }
+                            {loading ?   <ActivityIndicator size="small" color={'#fff'} /> : item ? "Update" : "Add menu"}
                         </Button>
                         {item ? (
                             <Button
-                                style={{ marginTop: 10, paddingVertical: 13, backgroundColor: 'red' }}
-                                onPress={() => DeleteCard(item.$id)} // ✅ wrapped in arrow function
+                                style={{ marginTop: 10, paddingVertical: 13, backgroundColor: '#FF5252' }}
+                                onPress={() => DeleteCard(item.$id)}
                             >
-                                Delete Card
+                                {loading ?  <ActivityIndicator size="small" color={'#fff'} /> : 'Delete Card' }
                             </Button>
                         ) : null}
 

@@ -19,6 +19,7 @@ export default function MenuCard({ item, onPress }) {
                 <Text style={styles.price}>₹{item.price}</Text>
             </View>
         </TouchableOpacity>
+
     );
 }
 
@@ -51,14 +52,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     name: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: '600',
         color: '#2c3e50',
         marginBottom: 8,
         lineHeight: 20,
     },
     price: {
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: '700',
         color: '#27ae60',
     },
