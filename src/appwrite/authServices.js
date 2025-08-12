@@ -1,6 +1,6 @@
 import conf from '@/src/conf/conf'
-import { Client, Account, ID } from "appwrite";
 import {showToast} from "@/src/utils/toastConfig";
+import {Account, Client, ID} from "react-native-appwrite";
 
 export class AuthService {
     client = new Client();

@@ -1,15 +1,23 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import menuService from '@/src/appwrite/menuService';
+import menuService from '../../appwrite/menuService';
 
 export default function MenuCard({ item, onPress }) {
-    const imageUrl = menuService.getImagePreview(item.image);
+    const [imageUrl, setImageUrl] = useState(null);
+
+    useEffect(() => {
+        if (item.image) {
+            menuService.getImageView(item.image)
+                .then(setImageUrl)
+                .catch(err => console.log(err));
+        }
+    }, [item.image]);
 
     return (
         <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
             <View style={styles.imageContainer}>
                 <Image
-                    source={{ uri: imageUrl.href }}
+                    source={imageUrl ? { uri: imageUrl } : ''}
                     style={styles.image}
                     resizeMode="cover"
                 />
@@ -19,7 +27,6 @@ export default function MenuCard({ item, onPress }) {
                 <Text style={styles.price}>₹{item.price}</Text>
             </View>
         </TouchableOpacity>
-
     );
 }
 

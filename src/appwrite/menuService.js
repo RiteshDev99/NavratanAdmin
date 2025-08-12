@@ -1,7 +1,7 @@
 import conf from '../conf/conf';
-import { Client, Databases, ID, Storage } from "appwrite";
+import { Client, Databases, ID, Storage } from "react-native-appwrite";
 import {showToast} from "../utils/toastConfig";
-import {Platform} from "react-native";
+import {arrayBufferToBase64} from "../utils/array-buffer";
 
 class MenuService {
     client = new Client();
@@ -113,10 +113,11 @@ class MenuService {
                 file,
             )
         } catch(error) {
-            console.log("Appwrite service :: updateFile :: error", error)
+            console.log("Appwrite service :: uploadFile :: error", error)
             return false;
         }
     }
+
 
 
     async deleteImage(fileId) {
@@ -131,8 +132,15 @@ class MenuService {
         }
     }
 
-    getImagePreview(fileId) {
-        return this.storage.getFilePreview(conf.appwriteBucketId, fileId);
+    async getImageView(fileId) {
+        try {
+            const response = await this.storage.getFileView(conf.appwriteBucketId, fileId);
+            const base64String = arrayBufferToBase64(response);
+            return `data:image/jpeg;base64,${base64String}`;
+        } catch (error) {
+            console.log("Error getting image view:", error);
+            return null;
+        }
     }
 
     async downloadImage(fileId) {

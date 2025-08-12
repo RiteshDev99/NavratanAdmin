@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import * as FileSystem from 'expo-file-system';
 import {
     View,
     Text,
@@ -25,7 +26,7 @@ import {addMenuItem, deleteMenuItem as deleteMenuCard} from "../../store/feature
 
 export default function MenuItemForm({item }) {
     const [modalVisible, setModalVisible] = useState(true);
-    const [imageUri, setImageUri] = useState(null);
+    const [imageUri, setImageUri] = useState('');
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
 
@@ -39,12 +40,12 @@ export default function MenuItemForm({item }) {
     } = useForm({
         defaultValues: {
             name: '',
-            image: '',
             price: '',
             category: '',
             isFeatured: false,
         },
     });
+
 
     const handleImagePick = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -55,8 +56,10 @@ export default function MenuItemForm({item }) {
         });
 
         if (!result.canceled && result.assets.length > 0) {
-            setImageUri(result.assets[0].uri);
+            const uri = result.assets[0].uri;
+            setImageUri(uri);
         }
+
     };
 
 
@@ -70,18 +73,23 @@ export default function MenuItemForm({item }) {
     const onSubmit = async (data) => {
         try {
             setLoading(true);
-            let uploadedImage = null;
-
             if (imageUri) {
+                // Get file info
+                const fileInfo = await FileSystem.getInfoAsync(imageUri);
+                if (!fileInfo.exists) {
+                    console.log('File does not exist');
+                    return;
+                }
+
                 const file = {
-                    uri: imageUri,
                     name: `menu-${Date.now()}.jpg`,
                     type: 'image/jpeg',
+                    size: fileInfo.size,
+                    uri: imageUri,
                 };
-                uploadedImage = await menuService.uploadFile(file);
-                console.log('Image ID:', uploadedImage?.$id);
-                console.log('Image URL:', uploadedImage?.url);
 
+
+                const  uploadedImage = await menuService.uploadFile(file);
 
                 const payload = {
                     ...data,
@@ -90,8 +98,9 @@ export default function MenuItemForm({item }) {
                     createdAt: new Date().toISOString(),
                 };
 
+
                 const result = await menuService.createMenuItem(payload);
-                console.log(payload);
+                console.log('payload',payload);
 
                 if (result) {
                     dispatch(addMenuItem(result));
@@ -227,7 +236,7 @@ export default function MenuItemForm({item }) {
                                 style={{ marginTop: 10, paddingVertical: 13, backgroundColor: '#FF5252' }}
                                 onPress={() => DeleteCard(item.$id)}
                             >
-                                {loading ?  <ActivityIndicator size="small" color={'#fff'} /> : 'Delete Card' }
+                                {loading ?  <ActivityIndicator size="small" color={'#fff'} /> : 'Delete menu' }
                             </Button>
                         ) : null}
 
