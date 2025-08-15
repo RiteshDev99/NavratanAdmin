@@ -74,7 +74,6 @@ export default function MenuItemForm({item }) {
         try {
             setLoading(true);
             if (imageUri) {
-                // Get file info
                 const fileInfo = await FileSystem.getInfoAsync(imageUri);
                 if (!fileInfo.exists) {
                     console.log('File does not exist');
@@ -145,7 +144,7 @@ export default function MenuItemForm({item }) {
             setValue('name', item.name);
             setValue('category', item.category);
             setValue('price', item.price);
-            setImageUri(item.imageUrl);
+            setImageUri(item.image);
         }
     }, [item]);
 

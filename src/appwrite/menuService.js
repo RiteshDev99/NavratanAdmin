@@ -153,6 +153,23 @@ class MenuService {
             return false;
         }
     }
+
+    subscribeToPayments(callback) {
+        return this.client.subscribe(
+            `databases.${conf.appwriteDataBaseId}.collections.${conf.appwritePaymentsCollectionId}.documents`,
+            (res) => {
+                if (res.events.includes("databases.*.collections.*.documents.*.create")) {
+                    callback(res.payload);
+                }
+            }
+        );
+    }
+    async getPayments() {
+        return this.databases.listDocuments(
+            conf.appwriteDataBaseId,
+            conf.appwritePaymentsCollectionId
+        );
+    }
 }
 
 const menuService = new MenuService();

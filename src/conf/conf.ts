@@ -3,6 +3,7 @@ const conf = {
     appwriteProjectId: String(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID),
     appwriteDataBaseId: String(process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID),
     appwriteCollectionId: String(process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID),
+    appwritePaymentsCollectionId: String(process.env.EXPO_PUBLIC_APPWRITE_PAYMENTSCOLLECTION_ID),
     appwriteBucketId: String(process.env.EXPO_PUBLIC_APPWRITE_BUCKET_ID),
 }
 

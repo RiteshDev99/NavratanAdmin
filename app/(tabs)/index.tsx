@@ -1,7 +1,8 @@
-import React from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { FlatList, StyleSheet, View, Text, ScrollView } from "react-native";
 import { Feather, FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import DashboardCard, { DashboardCardProps } from "@/src/components/ui/dashboardCard";
+import menuService from "@/src/appwrite/menuService";
 
 const dashboardCards: DashboardCardProps[] = [
     {
@@ -31,13 +32,29 @@ const dashboardCards: DashboardCardProps[] = [
 ];
 
 export default function Index() {
+    const [payments, setPayments] = useState<any[]>([]);
+
+    useEffect(() => {
+        menuService.getPayments().then((res) => {
+            setPayments(res.documents);
+        });
+
+        const unsubscribe = menuService.subscribeToPayments((newPayment: any) => {
+            console.log("New payment received:", newPayment);
+            setPayments((prev) => [newPayment, ...prev]);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
     return (
-        <View style={styles.dashboard}>
+        <ScrollView style={styles.dashboard}>
+            {/* Dashboard Cards */}
             <FlatList
                 data={dashboardCards}
                 keyExtractor={(item, index) => index.toString()}
-                numColumns={2} 
-                columnWrapperStyle={styles.row} 
+                numColumns={2}
+                columnWrapperStyle={styles.row}
                 contentContainerStyle={styles.listContainer}
                 renderItem={({ item }) => (
                     <DashboardCard
@@ -47,9 +64,21 @@ export default function Index() {
                         backgroundColor={item.backgroundColor}
                     />
                 )}
-                showsVerticalScrollIndicator={false} 
+                scrollEnabled={false}
             />
-        </View>
+
+            {/* Payments Section */}
+            <View style={styles.container}>
+                <Text style={styles.title}>Payments</Text>
+                {payments.map((item) => (
+                    <View key={item.$id} style={styles.paymentItem}>
+                        <Text style={styles.paymentText}>
+                            {item.name} — ₹{item.amount} — {item.status}
+                        </Text>
+                    </View>
+                ))}
+            </View>
+        </ScrollView>
     );
 }
 
@@ -64,5 +93,23 @@ const styles = StyleSheet.create({
     row: {
         justifyContent: "space-evenly",
         marginBottom: 15,
+    },
+    container: {
+        flex: 1,
+        padding: 16,
+        backgroundColor: "#fff",
+    },
+    title: {
+        fontSize: 22,
+        fontWeight: "bold",
+        marginBottom: 12,
+    },
+    paymentItem: {
+        padding: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: "#ddd",
+    },
+    paymentText: {
+        fontSize: 16,
     },
 });

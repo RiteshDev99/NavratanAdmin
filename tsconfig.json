@@ -15,5 +15,5 @@
     "expo-env.d.ts"
 ,
     "src/components/auth/login"
-  ]
+, "app/(tabs)/index.tsx"  ]
 }
