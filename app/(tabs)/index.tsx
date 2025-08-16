@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, View, Text, ScrollView } from "react-native";
+import {FlatList, StyleSheet, View, Text, ScrollView} from "react-native";
 import { Feather, FontAwesome, FontAwesome6 } from "@expo/vector-icons";
 import DashboardCard, { DashboardCardProps } from "@/src/components/ui/dashboardCard";
 import menuService from "@/src/appwrite/menuService";
+import OrdersReceivedCard from "@/src/components/ui/OrdersReceivedCard";
+import ShimmerEffectCard from "@/src/components/ui/shimmerEffectCard";
 
 const dashboardCards: DashboardCardProps[] = [
     {
@@ -32,16 +34,19 @@ const dashboardCards: DashboardCardProps[] = [
 ];
 
 export default function Index() {
-    const [payments, setPayments] = useState<any[]>([]);
+    const [orders, setOrders] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
+    const arr = Array.from({ length: 5 });
     useEffect(() => {
-        menuService.getPayments().then((res) => {
-            setPayments(res.documents);
+        menuService.getOrders().then((res) => {
+            setOrders(res.documents);
+            setLoading(false);
         });
 
-        const unsubscribe = menuService.subscribeToPayments((newPayment: any) => {
-            console.log("New payment received:", newPayment);
-            setPayments((prev) => [newPayment, ...prev]);
+        const unsubscribe = menuService.subscribeToOrders((newOrder: any) => {
+            console.log("New payment received:", newOrder);
+            setOrders((prev) => [newOrder, ...prev]);
         });
 
         return () => unsubscribe();
@@ -49,7 +54,6 @@ export default function Index() {
 
     return (
         <ScrollView style={styles.dashboard}>
-            {/* Dashboard Cards */}
             <FlatList
                 data={dashboardCards}
                 keyExtractor={(item, index) => index.toString()}
@@ -67,16 +71,31 @@ export default function Index() {
                 scrollEnabled={false}
             />
 
-            {/* Payments Section */}
             <View style={styles.container}>
-                <Text style={styles.title}>Payments</Text>
-                {payments.map((item) => (
-                    <View key={item.$id} style={styles.paymentItem}>
-                        <Text style={styles.paymentText}>
-                            {item.name} — ₹{item.amount} — {item.status}
-                        </Text>
+                {loading ? (
+                        <View>
+                            {arr.map((_, index) => (
+                                <ShimmerEffectCard key={index}/>
+                            ))}
+
+                        </View>
+
+                ) : (
+                    <View>
+                        {orders.length > 0 ? (
+                            orders.map((item) => (
+                                <View key={item.$id} style={styles.paymentItem}>
+                                    <OrdersReceivedCard key={item.$id} item={item} />
+
+                                </View>
+                            ))
+                        ) : (
+                            <Text style={{ textAlign: "center", marginTop: 20 }}>
+                                No orders found
+                            </Text>
+                        )}
                     </View>
-                ))}
+                )}
             </View>
         </ScrollView>
     );
@@ -96,18 +115,15 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding: 16,
-        backgroundColor: "#fff",
+        // backgroundColor: "#fff",
     },
     title: {
         fontSize: 22,
         fontWeight: "bold",
-        marginBottom: 12,
+        marginHorizontal:40
     },
     paymentItem: {
-        padding: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
+
     },
     paymentText: {
         fontSize: 16,

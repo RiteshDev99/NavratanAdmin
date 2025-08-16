@@ -170,6 +170,23 @@ class MenuService {
             conf.appwritePaymentsCollectionId
         );
     }
+
+    subscribeToOrders(callback) {
+        return this.client.subscribe(
+            `databases.${conf.appwriteDataBaseId}.collections.${conf.appwriteORDERSCollectionId}.documents`,
+            (res) => {
+                if (res.events.includes("databases.*.collections.*.documents.*.create")) {
+                    callback(res.payload);
+                }
+            }
+        );
+    }
+    async getOrders() {
+        return this.databases.listDocuments(
+            conf.appwriteDataBaseId,
+            conf.appwriteORDERSCollectionId
+        );
+    }
 }
 
 const menuService = new MenuService();
